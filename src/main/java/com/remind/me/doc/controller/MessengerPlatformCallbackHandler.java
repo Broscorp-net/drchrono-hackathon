@@ -213,6 +213,7 @@ public class MessengerPlatformCallbackHandler {
           messengerService.sendAuthorizeFormMessage(senderId);
           break;
         case "GET_STARTED_PAYLOAD":
+        case "Get started":
           messengerService.sendGreetingMessage(senderId);
           break;
         case "MEDICINE_PAYLOAD":
@@ -260,7 +261,6 @@ public class MessengerPlatformCallbackHandler {
         case "RESULTS_PAYLOAD":
           resultsService.sendResults(senderId);
           break;
-
 
         default:
           break;

@@ -64,7 +64,7 @@ public class AuthorizeService {
       JSONObject patientJson = (JSONObject) array.get(0);
       String id = patientJson.get("id").toString();
       patient.setIdChronos(id);
-      patientService.savePatient(patient);
+      patientService.savePatient(patient );
     }
     return response.getStatusCode().value();
   }
