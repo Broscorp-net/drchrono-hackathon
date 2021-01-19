@@ -39,10 +39,9 @@ public class AuthorizeService {
     if (status == 200) {
       message = patient.getFirstName()  + ", I've found that:\n" +
               "your provider is - " + providerName;
-      messengerService.addMenuSettings();
+    //  messengerService.addMenuSettings();
     } else message = "Something went wrong. Try again";
     messengerService.sendTextMessageWithMetadata(patient.getIdFacebook(), message, "MENU");
-
   }
 
   private int getPatient(Patient patient){

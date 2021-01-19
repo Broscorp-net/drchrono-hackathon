@@ -59,9 +59,6 @@ public class MessengerService {
   @Value("${redirect.uri}")
   private String redirectUrl;
 
-
-
-
   public void sendTextMessage(String recipientId, String text) {
     try {
       final IdRecipient recipient = IdRecipient.create(recipientId);

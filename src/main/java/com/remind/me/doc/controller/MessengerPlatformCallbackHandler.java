@@ -72,6 +72,9 @@ public class MessengerPlatformCallbackHandler {
   private ResultsService resultsService;
 
   @Autowired
+  private PatientService patientService;
+
+  @Autowired
   public MessengerPlatformCallbackHandler(final Messenger messenger) {
     this.messenger = messenger;
   }
@@ -134,7 +137,9 @@ public class MessengerPlatformCallbackHandler {
         case "menu":
           messengerService.messageMenu(senderId);
           break;
-
+        case "delete":
+          patientService.deletePatient(senderId);
+          break;
         default:
           sendTextMessage(senderId, messageText);
       }
@@ -162,7 +167,6 @@ public class MessengerPlatformCallbackHandler {
             break;
           case "GET_STARTED_PAYLOAD":
             messengerService.sendGreetingMessage(recipientId);
-            messenger.deleteSettings(MessengerSettingProperty.PERSISTENT_MENU);
             break;
           case "LIST_MEDICATIONS":
             messengerService.sendReminderTakePills(recipientId);
@@ -212,7 +216,6 @@ public class MessengerPlatformCallbackHandler {
         case "AUTHORIZATION_PAYLOAD":
           messengerService.sendAuthorizeFormMessage(senderId);
           break;
-        case "GET_STARTED_PAYLOAD":
         case "Get started":
           messengerService.sendGreetingMessage(senderId);
           break;
