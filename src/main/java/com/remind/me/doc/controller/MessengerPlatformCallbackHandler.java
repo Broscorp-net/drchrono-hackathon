@@ -162,8 +162,7 @@ public class MessengerPlatformCallbackHandler {
       try {
         switch (event.metadata().get()) {
           case "CHECK_AUTHORIZE":
-            authorizeService.authorizePatient(recipientId);
-            messengerService.sendGreetingMessage(recipientId);
+            logger.info("check authorize");
             break;
           case "GET_STARTED_PAYLOAD":
             messengerService.sendGreetingMessage(recipientId);

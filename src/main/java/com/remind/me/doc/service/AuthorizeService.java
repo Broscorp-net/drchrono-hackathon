@@ -5,10 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -33,18 +30,17 @@ public class AuthorizeService {
     Patient patient = patientService.getPatient(idFacebook);
     String textMessage = "Nice to meet you, " + patient.getFirstName() + " " + patient.getLastName() +
             "!\n Give me a sec...";
-    messengerService.sendTextMessage(patient.getIdFacebook(), textMessage);
-    int status = getPatient(patient);
+    messengerService.sendTextMessageWithMetadata(patient.getIdFacebook(), textMessage, "CHECK_AUTHORIZE");
     String message;
-    if (status == 200) {
+    if (getPatient(patient).is2xxSuccessful()) {
       message = patient.getFirstName()  + ", I've found that:\n" +
               "your provider is - " + providerName;
     //  messengerService.addMenuSettings();
-    } else message = "Something went wrong. Try again";
+    }  else { message = "Something went wrong. Try again";}
     messengerService.sendTextMessageWithMetadata(patient.getIdFacebook(), message, "MENU");
   }
 
-  private int getPatient(Patient patient){
+  private HttpStatus getPatient(Patient patient){
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
 
@@ -63,9 +59,9 @@ public class AuthorizeService {
       JSONObject patientJson = (JSONObject) array.get(0);
       String id = patientJson.get("id").toString();
       patient.setIdChronos(id);
-      patientService.savePatient(patient );
+      patientService.savePatient(patient);
     }
-    return response.getStatusCode().value();
+    return response.getStatusCode();
   }
 
 
