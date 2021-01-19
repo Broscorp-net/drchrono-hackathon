@@ -8,6 +8,6 @@ public class MainController {
 
   @GetMapping("/")
   public String mainController(){
-    return "redirect:https://github.com/Broscorp-net/drchrono-hackathon";
+    return "redirect:https://github.com/Broscorp-net/drchrono-hackathon/";
   }
 }
