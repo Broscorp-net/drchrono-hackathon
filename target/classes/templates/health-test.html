@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Authorize</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+    <script src="https://rawgit.com/RobinHerbots/jquery.inputmask/3.1.0/dist/jquery.inputmask.bundle.js"></script>
+</head>
+
+<body>
+<div class="container-fluid ">
+    <form th:action="@{'/healthTest/add/' + ${idFacebook}}" method="post" th:object="${healthTest}">
+        <div class="form-group">
+            <label for="temperature">Enter your Temperature</label>
+            <input id="temperature" type="text" class="mask-temperature form-control"  th:field="*{temperature}"/>
+        </div>
+        <div class="form-group">
+            <label for="pulse">Enter your Pulse</label>
+            <input id="pulse" type="number" class="form-control"  th:field="*{pulse}"/>
+        </div>
+        <div class="form-group">
+            <label for="bloodPressure">Enter your Blood pressure</label>
+            <input id="bloodPressure" class="mask-pressure form-control"  type="text" th:field="*{bloodPressure}"/>
+        </div>
+        <div class="form-group">
+            <label for="weight">Enter your Weight</label>
+            <input type="text" class="form-control" id="weight" th:field="*{weight}"/>
+        </div>
+        <div class="form-group">
+            <label for="painLevel">Enter your Pain level</label>
+            <input type="range" class="form-control" id="painLevel" min="1" max="10" step="1" th:field="*{painLevel}"/>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Send data"/>
+    </form>
+</div>
+</body>
+
+<script>
+$(document).ready(function(){
+$('.mask-temperature').inputmask('99.9');
+$('.mask-pressure').inputmask('99[9]/99[9]');
+});
+</script>
+</html>

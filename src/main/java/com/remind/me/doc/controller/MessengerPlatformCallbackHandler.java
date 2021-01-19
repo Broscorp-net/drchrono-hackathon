@@ -1,4 +1,4 @@
-package controller;
+package com.remind.me.doc.controller;
 
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
@@ -8,18 +8,14 @@ import com.github.messenger4j.messengerprofile.MessengerSettingProperty;
 import com.github.messenger4j.send.MessagePayload;
 import com.github.messenger4j.send.MessagingType;
 import com.github.messenger4j.send.NotificationType;
-import com.github.messenger4j.send.message.TemplateMessage;
 import com.github.messenger4j.send.message.TextMessage;
-import com.github.messenger4j.send.message.template.ButtonTemplate;
-import com.github.messenger4j.send.message.template.button.Button;
-import com.github.messenger4j.send.message.template.button.LogInButton;
-import com.github.messenger4j.send.message.template.button.LogOutButton;
 import com.github.messenger4j.send.recipient.IdRecipient;
 import com.github.messenger4j.webhook.Event;
 import com.github.messenger4j.webhook.event.AccountLinkingEvent;
 import com.github.messenger4j.webhook.event.MessageEchoEvent;
 import com.github.messenger4j.webhook.event.PostbackEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
+import com.remind.me.doc.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +23,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import service.AuthorizeService;
-import service.MessengerService;
-import service.TakingMedicineService;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
 
 import static com.github.messenger4j.Messenger.*;
 import static com.github.messenger4j.Messenger.SIGNATURE_HEADER_NAME;
@@ -45,7 +35,6 @@ import static java.util.Optional.of;
 @RestController
 @RequestMapping("/callback")
 public class MessengerPlatformCallbackHandler {
-  private static final String RESOURCE_URL = "https://raw.githubusercontent.com/fbsamples/messenger-platform-samples/master/node/public";
 
   private static final Logger logger = LoggerFactory.getLogger(MessengerPlatformCallbackHandler.class);
 
@@ -63,6 +52,9 @@ public class MessengerPlatformCallbackHandler {
   private String takePillsMessage;
   @Value("${did.not.take.pills}")
   private String didNotTakePillsMessage;
+  @Value("${appointmentButtonCheckUp}")
+  private String appointmentButtonCheckUp;
+
 
   @Autowired
   private MessengerService messengerService;
@@ -72,6 +64,12 @@ public class MessengerPlatformCallbackHandler {
 
   @Autowired
   private TakingMedicineService takingMedicineService;
+
+  @Autowired
+  private AppointmentService appointmentService;
+
+  @Autowired
+  private ResultsService resultsService;
 
   @Autowired
   public MessengerPlatformCallbackHandler(final Messenger messenger) {
@@ -84,6 +82,7 @@ public class MessengerPlatformCallbackHandler {
     logger.debug("Received Webhook verification request - mode: {} | verifyToken: {} | challenge: {}", mode, verifyToken, challenge);
     try {
       this.messenger.verifyWebhook(mode, verifyToken);
+      messengerService.addMenuSettings();
       return ResponseEntity.ok(challenge);
     } catch (MessengerVerificationException e) {
       logger.warn("Webhook verification failed: {}", e.getMessage());
@@ -132,7 +131,9 @@ public class MessengerPlatformCallbackHandler {
           messengerService.sendGreetingMessage(senderId);
           messenger.deleteSettings(MessengerSettingProperty.PERSISTENT_MENU);
           break;
-
+        case "menu":
+          messengerService.messageMenu(senderId);
+          break;
 
         default:
           sendTextMessage(senderId, messageText);
@@ -169,6 +170,13 @@ public class MessengerPlatformCallbackHandler {
           case "MENU":
             messengerService.messageMenu(recipientId);
             break;
+          case "RESULT":
+            messengerService.buttonProgress(recipientId);
+            break;
+          case "SEND_RESULTS":
+            messengerService.sendButtonChangeTimeAfterResults(recipientId);
+            break;
+
           default:
             break;
         }
@@ -177,7 +185,6 @@ public class MessengerPlatformCallbackHandler {
       }
     }
     logger.info("Received echo for message '{}' that has been sent to recipient '{}' by sender '{}' at '{}'", messageId, recipientId, senderId, timestamp);
-    //  sendTextMessage(senderId, "MessageEchoEvent tapped");
   }
 
   private void handleAccountLinkingEvent(AccountLinkingEvent event) {
@@ -232,12 +239,28 @@ public class MessengerPlatformCallbackHandler {
         case "DID_IT_PAYLOAD":
           messengerService.chechTakingPillsButtons(senderId);
           break;
+        case "TEST_PAYLOAD":
+          messengerService.sendMessageAboutTest(senderId);
+          break;
         case "TAKE_MEDICATION_PAYLOAD":
-          messengerService.sendTextMessage(senderId, takePillsMessage);
+          messengerService.sendTextMessageWithMetadata(senderId, takePillsMessage, "RESULT");
           break;
         case "DID_NOT_TAKE_MEDICATION_PAYLOAD":
-          messengerService.sendTextMessage(senderId, didNotTakePillsMessage);
+          messengerService.sendTextMessageWithMetadata(senderId, didNotTakePillsMessage, "RESULT");
           break;
+        case "CHECK_UP_PAYLOAD":
+          messengerService.sendCheckUpButton(senderId);
+          break;
+        case "CHECK_UP_RESULTS_PAYLOAD":
+          messengerService.sendResultsCheckUp(senderId);
+          break;
+        case "CREATE_APPOINTMENT_PAYLOAD":
+          messengerService.sendButtonSendToDoctor(senderId, appointmentButtonCheckUp);
+          break;
+        case "RESULTS_PAYLOAD":
+          resultsService.sendResults(senderId);
+          break;
+
 
         default:
           break;

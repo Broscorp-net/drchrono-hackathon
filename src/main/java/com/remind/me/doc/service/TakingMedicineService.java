@@ -1,9 +1,11 @@
-package service;
+package com.remind.me.doc.service;
 
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
 import com.google.gson.Gson;
-import model.Medication;
+import com.google.gson.GsonBuilder;
+import com.remind.me.doc.model.Medication;
+import com.remind.me.doc.model.Patient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,26 +24,27 @@ import java.util.List;
 @Service
 public class TakingMedicineService {
 
-  @Value("${patientId}")
-  private String patientId;
-
-  @Value("${access.token}")
-  private String accessToken;
-
   @Value("${dr.chrono.url}")
   private String defaultUrl;
 
   @Autowired
   private MessengerService messengerService;
+  @Autowired
+  private PatientService patientService;
+  @Autowired
+  private MedicationService medicationService;
+  @Autowired
+  private UpdateTokenService updateTokenService;
 
   public void checkDiagnosis(String senderId) {
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
     List<String> diagnosis = new ArrayList<>();
-    headers.set("Authorization", "Bearer " + accessToken);
+    Patient patient = patientService.getPatient(senderId);
+    headers.set("Authorization", "Bearer " + updateTokenService.getAccessToken());
     String url = defaultUrl + "/api/problems";
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-            .queryParam("patient", patientId);
+            .queryParam("patient", patient.getIdChronos());
     HttpEntity entity = new HttpEntity(headers);
     ResponseEntity<String> response = restTemplate.exchange(
             builder.toUriString(), HttpMethod.GET, entity, String.class);
@@ -65,10 +68,11 @@ public class TakingMedicineService {
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
     List<String> diagnosis = new ArrayList<>();
-    headers.set("Authorization", "Bearer " + accessToken);
+    Patient patient = patientService.getPatient(senderId);
+    headers.set("Authorization", "Bearer " + updateTokenService.getAccessToken());
     String url = defaultUrl + "/api/medications";
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
-            .queryParam("patient", patientId);
+            .queryParam("patient", patient.getIdChronos());
     HttpEntity entity = new HttpEntity(headers);
     ResponseEntity<String> response = restTemplate.exchange(
             builder.toUriString(), HttpMethod.GET, entity, String.class);
@@ -77,13 +81,16 @@ public class TakingMedicineService {
       JSONObject jsonObject = new JSONObject(response.getBody());
       JSONArray array = jsonObject.getJSONArray("results");
       for (int i = 0; i < array.length(); i++) {
-        System.out.println(array.get(i));
-        Medication medication = new Gson()
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        Medication medication = gson
                 .fromJson(array.get(i).toString(), Medication.class);
         if (medication.getStatus().equals("active")) {
+          medication.setPatient(patient);
+          medicationService.saveMedication(medication);
           medications.add(medication);
         }
       }
+      patientService.savePatient(patient);
     }
     return medications;
   }
@@ -108,8 +115,16 @@ public class TakingMedicineService {
   }
 
   public void sendMessageAboutMedication(String senderId) {
-    List<Medication> medications = checkMedication(senderId);
-    Medication medication = medications.get(0);
+    Patient patient = patientService.getPatient(senderId);
+    List<Medication> medications = patient.getMedicationList();
+    Medication medication;
+   if (patient.getCurrentMedication() == null) {
+     medication = medications.get(0);
+   } else {
+     int indexOfMedication = medications.indexOf(medicationService.getMedication(patient.getCurrentMedication()));
+     if (indexOfMedication == medications.size()-1) indexOfMedication = 0;
+     medication = medications.get(indexOfMedication+1);
+   }
     messengerService.sendTextMessage(senderId, medication.getName());
     StringBuilder messageDate = new StringBuilder("Date to take: \n" + medication.getDate_started_taking());
     if (medication.getDate_stopped_taking() != null) {
@@ -125,6 +140,8 @@ public class TakingMedicineService {
       messengerService.sendTextMessage(senderId, medication.getPharmacy_note());
     }
     try {
+      patient.setCurrentMedication(medication.getId());
+      patientService.savePatient(patient);
       messengerService.sendButtonsAboutReminds(senderId);
     } catch (MessengerApiException | MessengerIOException e) {
       e.printStackTrace();

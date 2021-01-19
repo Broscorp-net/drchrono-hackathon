@@ -1,14 +1,17 @@
-package service;
+package com.remind.me.doc.service;
 
-import model.Patient;
+import com.remind.me.doc.model.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import repository.PatientRepository;
+import com.remind.me.doc.repository.PatientRepository;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional
 public class PatientService {
 
   @Autowired
@@ -33,5 +36,11 @@ public class PatientService {
 
   public void deletePatient(String id){
     patientRepository.delete(id);
+  }
+
+  public List<Patient> listPatient(){
+    List<Patient> list = new ArrayList<>();
+    patientRepository.findAll().forEach(list::add);
+    return list;
   }
 }

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Authorize</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+</head>
+
+<body>
+<div class="container-fluid ">
+    <form th:action="@{'/patient/add/' + ${patient.idFacebook}}" method="post" th:object="${patient}">
+        <div class="form-group">
+            <label for="firstName">Enter your Fisrt name</label>
+            <input id="firstName" type="text" class="form-control"  th:field="*{firstName}"/>
+        </div>
+        <div class="form-group">
+            <label for="lastName">Enter your Last name</label>
+            <input id="lastName" class="form-control"  type="text" th:field="*{lastName}"/>
+        </div>
+        <div class="form-group">
+            <label for="chartId">Enter your ID</label>
+            <input type="text" class="form-control" id="chartId" th:field="*{chartId}"/>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Send data"/>
+    </form>
+</div>
+</body>
+</html>
