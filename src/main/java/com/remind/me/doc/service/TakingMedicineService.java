@@ -86,7 +86,7 @@ public class TakingMedicineService {
                 .fromJson(array.get(i).toString(), Medication.class);
         if (medication.getStatus().equals("active")) {
           medication.setPatient(patient);
-          medicationService.saveMedication(medication);
+          medicationService.createMedication(medication);
           medications.add(medication);
         }
       }
