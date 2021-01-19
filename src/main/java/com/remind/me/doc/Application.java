@@ -14,9 +14,9 @@ import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 public class Application {
 
   @Bean
-  public Messenger messenger(@Value("${messenger4j.pageAccessToken}") String pageAccessToken,
-                             @Value("${messenger4j.appSecret}") final String appSecret,
-                             @Value("${messenger4j.verifyToken}") final String verifyToken) {
+  public Messenger messenger(@Value("${pageAccessToken}") String pageAccessToken,
+                             @Value("${appSecret}") final String appSecret,
+                             @Value("${verifyToken}") final String verifyToken) {
     return Messenger.create(pageAccessToken, appSecret, verifyToken);
   }
 

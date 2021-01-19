@@ -23,7 +23,6 @@ import com.remind.me.doc.model.Patient;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
@@ -88,7 +87,7 @@ public class MessengerService {
   }
 
   @SneakyThrows
-  public void addMenuSettings(){
+  public void addMenuSettings() {
 
     final PostbackCallToAction callToActionAA =
             PostbackCallToAction.create("Taking medicine", "MEDICINE_PAYLOAD");
@@ -116,16 +115,16 @@ public class MessengerService {
   }
 
   @SneakyThrows
-  public void sendDiagnosisMessage(List<String> diagnosis, String senderId){
+  public void sendDiagnosisMessage(List<String> diagnosis, String senderId) {
     StringBuilder sb = new StringBuilder();
     sb.append(diagnosisMessage);
     if (diagnosis.size() == 0) {
       sendTextMessage(senderId, "You had no problem. Congratulations!");
       return;
     }
-    for (int i=0; i<diagnosis.size(); i++) {
+    for (int i = 0; i < diagnosis.size(); i++) {
       int number = i + 1;
-      sb.append("\n" + number + ". " +  diagnosis.get(i) );
+      sb.append("\n" + number + ". " + diagnosis.get(i));
     }
     final List<Button> buttons = Arrays.asList(
             PostbackButton.create("Proceed to medication", "PROCEED_MEDICATION_PAYLOAD")
@@ -264,7 +263,7 @@ public class MessengerService {
             PostbackButton.create("No", "DID_NOT_TAKE_MEDICATION_PAYLOAD")
     );
     Patient patient = patientService.getPatient(senderId);
-    for (Medication medication: patient.getMedicationList()) {
+    for (Medication medication : patient.getMedications()) {
       medication.setTakingPills(medication.getTakingPills() + 1);
       medicationService.saveMedication(medication);
     }
@@ -293,7 +292,7 @@ public class MessengerService {
 
   public void sendAuthorizeFormMessage(String senderId) throws MessengerApiException, MessengerIOException, MalformedURLException {
     final List<Button> buttons = Arrays.asList(
-            UrlButton.create("Fill form", new URL(redirectUrl +"/patient/add/" + senderId), of(WebviewHeightRatio.COMPACT), of(false), empty(), empty())
+            UrlButton.create("Fill form", new URL(redirectUrl + "/patient/add/" + senderId), of(WebviewHeightRatio.COMPACT), of(false), empty(), empty())
     );
 
 
@@ -308,7 +307,7 @@ public class MessengerService {
     String message = String.format(letstestMessage, patient.getFirstName());
     sendTextMessage(senderId, message);
     final List<Button> buttons = Arrays.asList(
-            UrlButton.create("Do it", new URL(redirectUrl +"/healthTest/add/" + senderId), of(WebviewHeightRatio.TALL), of(false), empty(), empty()),
+            UrlButton.create("Do it", new URL(redirectUrl + "/healthTest/add/" + senderId), of(WebviewHeightRatio.TALL), of(false), empty(), empty()),
             PostbackButton.create("Skip it", "MENU_PAYLOAD")
     );
 
@@ -322,7 +321,7 @@ public class MessengerService {
     try {
       final List<Button> buttons;
       buttons = Arrays.asList(
-              UrlButton.create("Schedule appointment", new URL(redirectUrl +"/appointment/" + idFacebook + "/add/" ), of(WebviewHeightRatio.COMPACT), of(false), empty(), empty()),
+              UrlButton.create("Schedule appointment", new URL(redirectUrl + "/appointment/" + idFacebook + "/add/"), of(WebviewHeightRatio.COMPACT), of(false), empty(), empty()),
               PostbackButton.create("Skip it", "MENU_PAYLOAD")
       );
       final ButtonTemplate buttonTemplate = ButtonTemplate.create(textMessage, buttons);

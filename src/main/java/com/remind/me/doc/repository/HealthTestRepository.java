@@ -5,5 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface HealthTestRepository extends CrudRepository<HealthTest, Integer>{
+public interface HealthTestRepository extends CrudRepository<HealthTest, Integer> {
 }

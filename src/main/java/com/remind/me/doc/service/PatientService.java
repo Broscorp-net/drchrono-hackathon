@@ -19,7 +19,7 @@ public class PatientService {
 
   public Patient getPatient(String idFacebook) {
     if (patientRepository.exists(idFacebook)) {
-      return  patientRepository.findOne(idFacebook);
+      return patientRepository.findOne(idFacebook);
     } else throw new EntityNotFoundException();
   }
 
@@ -29,16 +29,16 @@ public class PatientService {
   }
 
   public void savePatient(Patient patient) throws EntityNotFoundException {
-    if(patientRepository.exists(patient.getIdFacebook())){
-      patientRepository.save(patient);}
-    else  throw new EntityNotFoundException();
+    if (patientRepository.exists(patient.getIdFacebook())) {
+      patientRepository.save(patient);
+    } else throw new EntityNotFoundException();
   }
 
-  public void deletePatient(String id){
+  public void deletePatient(String id) {
     patientRepository.delete(id);
   }
 
-  public List<Patient> listPatient(){
+  public List<Patient> listPatient() {
     List<Patient> list = new ArrayList<>();
     patientRepository.findAll().forEach(list::add);
     return list;

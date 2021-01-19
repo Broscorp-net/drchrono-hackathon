@@ -21,7 +21,6 @@ public class SchedulingConfigs implements SchedulingConfigurer {
     taskRegistrar.addTriggerTask(new Runnable() {
       @Override
       public void run() {
-        // Do not put @Scheduled annotation above this method, we don't need it anymore.
         System.out.println("Running Schedular..." + Calendar.getInstance().getTime());
       }
     }, new Trigger() {
@@ -37,7 +36,6 @@ public class SchedulingConfigs implements SchedulingConfigurer {
   }
 
   private int getNewExecutionTime() {
-    //Load Your execution time from database or property file
     return 100000;
   }
 

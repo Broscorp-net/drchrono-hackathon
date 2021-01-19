@@ -26,21 +26,22 @@ public class AuthorizeService {
   @Autowired
   UpdateTokenService updateTokenService;
 
-  public void authorizePatient(String idFacebook){
+  public void authorizePatient(String idFacebook) {
     Patient patient = patientService.getPatient(idFacebook);
     String textMessage = "Nice to meet you, " + patient.getFirstName() + " " + patient.getLastName() +
             "!\n Give me a sec...";
     messengerService.sendTextMessageWithMetadata(patient.getIdFacebook(), textMessage, "CHECK_AUTHORIZE");
     String message;
     if (getPatient(patient).is2xxSuccessful()) {
-      message = patient.getFirstName()  + ", I've found that:\n" +
+      message = patient.getFirstName() + ", I've found that:\n" +
               "your provider is - " + providerName;
-    //  messengerService.addMenuSettings();
-    }  else { message = "Something went wrong. Try again";}
+    } else {
+      message = "Something went wrong. Try again";
+    }
     messengerService.sendTextMessageWithMetadata(patient.getIdFacebook(), message, "MENU");
   }
 
-  private HttpStatus getPatient(Patient patient){
+  private HttpStatus getPatient(Patient patient) {
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
 

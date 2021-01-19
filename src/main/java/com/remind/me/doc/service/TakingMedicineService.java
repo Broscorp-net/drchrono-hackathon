@@ -48,7 +48,7 @@ public class TakingMedicineService {
     HttpEntity entity = new HttpEntity(headers);
     ResponseEntity<String> response = restTemplate.exchange(
             builder.toUriString(), HttpMethod.GET, entity, String.class);
-    if (response.getStatusCode().value() == 200) {
+    if (response.getStatusCode().is2xxSuccessful()) {
       JSONObject jsonObject = new JSONObject(response.getBody());
       JSONArray array = jsonObject.getJSONArray("results");
       for (int i = 0; i < array.length(); i++) {
@@ -67,7 +67,6 @@ public class TakingMedicineService {
   private List<Medication> checkMedication(String senderId) {
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
-    List<String> diagnosis = new ArrayList<>();
     Patient patient = patientService.getPatient(senderId);
     headers.set("Authorization", "Bearer " + updateTokenService.getAccessToken());
     String url = defaultUrl + "/api/medications";
@@ -77,7 +76,7 @@ public class TakingMedicineService {
     ResponseEntity<String> response = restTemplate.exchange(
             builder.toUriString(), HttpMethod.GET, entity, String.class);
     List<Medication> medications = new ArrayList<>();
-    if (response.getStatusCode().value() == 200) {
+    if (response.getStatusCode().is2xxSuccessful()) {
       JSONObject jsonObject = new JSONObject(response.getBody());
       JSONArray array = jsonObject.getJSONArray("results");
       for (int i = 0; i < array.length(); i++) {
@@ -95,15 +94,15 @@ public class TakingMedicineService {
     return medications;
   }
 
-  public void sendMessageAboutMedications(String senderId){
+  public void sendMessageAboutMedications(String senderId) {
     List<Medication> medications = checkMedication(senderId);
     if (medications.size() > 0) {
-     messengerService.sendTextMessage(senderId, "You're prescribed the following medications:");
-      for (Medication medication: medications) {
-         StringBuilder message = new StringBuilder(medication.getName() + " " + medication.getDate_started_taking());
-          if (medication.getDate_stopped_taking() != null) {
-            message.append(" - ").append(medication.getDate_stopped_taking()).append("\n");
-          } else message.append("+\n");
+      messengerService.sendTextMessage(senderId, "You're prescribed the following medications:");
+      for (Medication medication : medications) {
+        StringBuilder message = new StringBuilder(medication.getName() + " " + medication.getDate_started_taking());
+        if (medication.getDate_stopped_taking() != null) {
+          message.append(" - ").append(medication.getDate_stopped_taking()).append("\n");
+        } else message.append("+\n");
         messengerService.sendTextMessage(senderId, message.toString());
       }
     }
@@ -116,15 +115,15 @@ public class TakingMedicineService {
 
   public void sendMessageAboutMedication(String senderId) {
     Patient patient = patientService.getPatient(senderId);
-    List<Medication> medications = patient.getMedicationList();
+    List<Medication> medications = patient.getMedications();
     Medication medication;
-   if (patient.getCurrentMedication() == null) {
-     medication = medications.get(0);
-   } else {
-     int indexOfMedication = medications.indexOf(medicationService.getMedication(patient.getCurrentMedication()));
-     if (indexOfMedication == medications.size()-1) indexOfMedication = 0;
-     medication = medications.get(indexOfMedication+1);
-   }
+    if (patient.getCurrentMedication() == null) {
+      medication = medications.get(0);
+    } else {
+      int indexOfMedication = medications.indexOf(medicationService.getMedication(patient.getCurrentMedication()));
+      if (indexOfMedication == medications.size() - 1) indexOfMedication = 0;
+      medication = medications.get(indexOfMedication + 1);
+    }
     messengerService.sendTextMessage(senderId, medication.getName());
     StringBuilder messageDate = new StringBuilder("Date to take: \n" + medication.getDate_started_taking());
     if (medication.getDate_stopped_taking() != null) {
@@ -133,7 +132,7 @@ public class TakingMedicineService {
     messengerService.sendTextMessage(senderId, messageDate.toString());
     if (medication.getDosage_quantity() != null || medication.getNotes() != null) {
       String messageDose = "Dose and Timing: \n" + medication.getDosage_quantity()
-             +  "\n" + medication.getNotes();
+              + "\n" + medication.getNotes();
       messengerService.sendTextMessage(senderId, messageDose);
     }
     if (medication.getPharmacy_note() != null) {

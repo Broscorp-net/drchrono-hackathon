@@ -28,7 +28,7 @@ public class AppointmentService {
 
   public Appointment getAppointment(Integer id) {
     if (appointmentRepository.exists(id)) {
-      return  appointmentRepository.findOne(id);
+      return appointmentRepository.findOne(id);
     } else throw new EntityNotFoundException();
   }
 
@@ -42,15 +42,15 @@ public class AppointmentService {
   }
 
   public void saveAppointment(Appointment appointment) throws EntityNotFoundException {
-    if(appointmentRepository.exists(appointment.getId())){
-      appointmentRepository.save(appointment);}
-    else  throw new EntityNotFoundException();
+    if (appointmentRepository.exists(appointment.getId())) {
+      appointmentRepository.save(appointment);
+    } else throw new EntityNotFoundException();
   }
 
-  public void deleteAppointment(Integer id){
+  public void deleteAppointment(Integer id) {
     appointmentRepository.delete(id);
   }
-  
+
   public void sendAppoitment(Appointment appointment) {
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();

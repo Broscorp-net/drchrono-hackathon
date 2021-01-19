@@ -104,7 +104,7 @@ public class MessengerPlatformCallbackHandler {
           handlePostbackEvent(event.asPostbackEvent());
         } else if (event.isMessageEchoEvent()) {
           handleMessageEchoEvent(event.asMessageEchoEvent());
-        }else {
+        } else {
           handleFallbackEvent(event);
         }
       });
@@ -210,7 +210,7 @@ public class MessengerPlatformCallbackHandler {
     logger.debug("senderId: {}", senderId);
     final Instant timestamp = event.timestamp();
     logger.debug("timestamp: {}", timestamp);
-    try{
+    try {
       switch (payload) {
         case "AUTHORIZATION_PAYLOAD":
           messengerService.sendAuthorizeFormMessage(senderId);

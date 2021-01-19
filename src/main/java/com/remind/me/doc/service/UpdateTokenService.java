@@ -18,6 +18,7 @@ public class UpdateTokenService {
   public String getAccessToken() {
     return accessToken;
   }
+
   private String accessToken;
 
   @Value("${refresh.token}")

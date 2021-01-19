@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.InitBinder;
 
 public abstract class BaseController {
 
-        @InitBinder
-        public void initBinder(final WebDataBinder binder) {
+  @InitBinder
+  public void initBinder(final WebDataBinder binder) {
 
-          final StringTrimmerEditor stringtrimmer =
-                  new StringTrimmerEditor(true);
-          binder.registerCustomEditor(String.class, stringtrimmer);
-        }
+    final StringTrimmerEditor stringtrimmer =
+            new StringTrimmerEditor(true);
+    binder.registerCustomEditor(String.class, stringtrimmer);
+  }
 }

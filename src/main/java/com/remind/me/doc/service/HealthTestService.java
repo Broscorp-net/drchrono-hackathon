@@ -15,7 +15,7 @@ public class HealthTestService {
 
   public HealthTest getHealthTest(Integer id) {
     if (healthTestRepository.exists(id)) {
-      return  healthTestRepository.findOne(id);
+      return healthTestRepository.findOne(id);
     } else throw new EntityNotFoundException();
   }
 
@@ -25,12 +25,12 @@ public class HealthTestService {
   }
 
   public void saveHealthTest(HealthTest healthTest) throws EntityNotFoundException {
-    if(healthTestRepository.exists(healthTest.getId())){
-      healthTestRepository.save(healthTest);}
-    else  throw new EntityNotFoundException();
+    if (healthTestRepository.exists(healthTest.getId())) {
+      healthTestRepository.save(healthTest);
+    } else throw new EntityNotFoundException();
   }
 
-  public void deleteHealthTest(Integer id){
+  public void deleteHealthTest(Integer id) {
     healthTestRepository.delete(id);
   }
 }

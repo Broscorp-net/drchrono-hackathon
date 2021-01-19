@@ -31,11 +31,16 @@ public class Patient {
 
   @ToString.Exclude
   @JsonManagedReference
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "patient",  fetch = EAGER)
-  List<Medication> medicationList;
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "patient", fetch = EAGER)
+  List<Medication> medications;
 
   @ToString.Exclude
   @JsonManagedReference
   @OneToMany(cascade = CascadeType.ALL, mappedBy = "patient")
-  List<HealthTest> healthTestList;
+  List<HealthTest> healthTests;
+
+  @ToString.Exclude
+  @JsonManagedReference
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "patient")
+  List<Appointment> appointments;
 }

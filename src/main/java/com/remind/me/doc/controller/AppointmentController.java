@@ -32,7 +32,6 @@ public class AppointmentController {
   private String appointmentCreatedMessage;
 
 
-
   @GetMapping("/appointment/{idFacebook}/add")
   public String addDate(Model model, @PathVariable("idFacebook") String idFacebook) {
     Appointment appointment = new Appointment();
@@ -47,6 +46,7 @@ public class AppointmentController {
     Patient patient = patientService.getPatient(idFacebook);
     appointment.setPatient(patient);
     Appointment appointmentCreated = appointmentService.createAppointment(appointment);
+
     appointmentService.sendAppoitment(appointmentCreated);
     messengerService.sendTextMessage(idFacebook, appointmentCreatedMessage);
     messengerService.messageMenu(idFacebook);

@@ -14,7 +14,7 @@ public class MedicationService {
 
   public Medication getMedication(Long id) {
     if (medicationRepository.exists(id)) {
-      return  medicationRepository.findOne(id);
+      return medicationRepository.findOne(id);
     } else throw new EntityNotFoundException();
   }
 
@@ -24,12 +24,12 @@ public class MedicationService {
   }
 
   public void saveMedication(Medication medication) throws EntityNotFoundException {
-    if(medicationRepository.exists(medication.getId())){
-      medicationRepository.save(medication);}
-    else  throw new EntityNotFoundException();
+    if (medicationRepository.exists(medication.getId())) {
+      medicationRepository.save(medication);
+    } else throw new EntityNotFoundException();
   }
 
-  public void deleteMedication(Long id){
+  public void deleteMedication(Long id) {
     medicationRepository.delete(id);
   }
 }

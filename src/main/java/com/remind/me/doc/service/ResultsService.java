@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Entity;
-
 @Service
 public class ResultsService {
 
@@ -27,8 +25,8 @@ public class ResultsService {
   }
 
   @Scheduled(cron = "0 0 22 * * *")
-  public void sendWeeklyResults(){
-    for (Patient patient: patientService.listPatient()) {
+  public void sendWeeklyResults() {
+    for (Patient patient : patientService.listPatient()) {
       messengerService.sendTextMessageWithMetadata(patient.getIdFacebook(),
               messageAboutResults(patient), "SEND_RESULTS");
     }
@@ -36,11 +34,11 @@ public class ResultsService {
 
   private String messageAboutResults(Patient patient) {
     int takepills = 0;
-    int all = patient.getMedicationList().size()*7;
-    for (Medication medication: patient.getMedicationList()) {
+    int all = patient.getMedications().size() * 7;
+    for (Medication medication : patient.getMedications()) {
       takepills += medication.getTakingPills();
     }
-    int percentTakes = (int) ((takepills*1.0/all)*100);
+    int percentTakes = (int) ((takepills * 1.0 / all) * 100);
     String message = String.format(progressMessage, patient.getFirstName(), percentTakes, 100 - percentTakes);
     return message;
   }
