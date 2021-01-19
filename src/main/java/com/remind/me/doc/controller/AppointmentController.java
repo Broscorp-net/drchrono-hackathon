@@ -38,7 +38,7 @@ public class AppointmentController {
     Appointment appointment = new Appointment();
     model.addAttribute("appointment", appointment);
     model.addAttribute("idFacebook", idFacebook);
-    return "/appointment";
+    return "appointment";
   }
 
   @SneakyThrows

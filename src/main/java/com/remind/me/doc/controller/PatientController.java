@@ -28,7 +28,7 @@ public class PatientController {
     Patient patient = new Patient();
     patient.setIdFacebook(senderId);
     model.addAttribute("patient", patient);
-    return "/authorize";
+    return "authorize";
   }
 
   @SneakyThrows

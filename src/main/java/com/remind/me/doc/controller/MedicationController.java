@@ -34,7 +34,7 @@ public class MedicationController {
     medication.setId(Long.parseLong(id));
     model.addAttribute("medication", medication);
     model.addAttribute("idFacebook", idFacebook);
-    return "/date";
+    return "date";
   }
 
   @SneakyThrows

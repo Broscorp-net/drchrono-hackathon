@@ -34,7 +34,7 @@ public class HealthTestController {
     HealthTest healthTest = new HealthTest();
     model.addAttribute("healthTest", healthTest);
     model.addAttribute("idFacebook", idFacebook);
-    return "/health-test";
+    return "health-test";
   }
 
   @SneakyThrows
